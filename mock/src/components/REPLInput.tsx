@@ -38,16 +38,58 @@ export function REPLInput(props : REPLInputProps) {
           setBriefMode(false);
           return [["Mode set to verbose"]];
         } else {
-          return [["Wrong argument provided to mode. mode <brief OR verbose>"]];
+          return [["Wrong argument provided to mode: mode <brief OR verbose>"]];
         }
       } else {
-        return [["Wrong number of arguments provided"]];
+        return [["Wrong number of arguments provided: mode <brief OR verbose>"]];
       }
     };
+
+    /**
+     * REPLFunction for loading csv.
+     */
+    let loadCSV: REPLFunction;
+    loadCSV = function (args: Array<string>): string[][] {
+      if (args.length === 1){
+        /* return mockedLoadCsv(args[0]); */
+        return [["placeholder mockedLoad"]]
+      } else {
+        return [["Indicate CSV file path: load_file <csv-file-path>"]]
+      }
+    }
+
+    /**
+     * REPLFunction for viewing csv.
+     */
+    let viewCSV: REPLFunction;
+    viewCSV = function (args: Array<string>): string[][] {
+      if (args.length === 0){
+       /* return mockedViewCsv(); */
+       return [["placeholder mockedView"]]
+      } else {
+        return [["viewcsv expects no arguments: view"]]
+      }
+    }
+
+    /**
+     * REPLFunction for searching csv.
+     */
+    let searchCSV: REPLFunction;
+    searchCSV = function (args: Array<string>): string[][] {
+      if ((args.length === 2) || (args.length === 3)){
+        /* return mockedSearchCsv(); */
+        return [["placeholder mockedSearch"]]
+      } else {
+        return [["Search formatting incorrect: search <value> <column>"]]
+      }
+    }
 
     // map lookup to function for cmd
     var commandFunctions: { [cmd: string]: REPLFunction } = {
       mode: setMode,
+      load_file: loadCSV,
+      view: viewCSV,
+      search: searchCSV
     };
 
     /**
