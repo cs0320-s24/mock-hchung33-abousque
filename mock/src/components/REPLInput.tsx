@@ -16,14 +16,29 @@ export function REPLInput(props : REPLInputProps) {
     const [commandString, setCommandString] = useState<string>('');
     // TODO WITH TA : add a count state
     const [count, setCount] = useState<number>(0)
+
+    const [briefMode, setBriefMode] = useState<boolean>(true);
     
     // This function is triggered when the button is clicked.
     function handleSubmit(commandString:string) {
       setCount(count+1)
-      // CHANGED
       props.setHistory([...props.history, commandString])
+      handleMode(commandString)
       setCommandString('')
+      console.log({briefMode})
     }
+
+    function handleMode(commandString:string){
+      let [command, arg] = commandString.split(" ");
+      if (command == 'mode'){
+        if (arg == 'brief'){
+          setBriefMode(true)
+        } else if (arg == 'verbose') {
+          setBriefMode(false)
+        }
+      }
+    }
+
     /**
      * We suggest breaking down this component into smaller components, think about the individual pieces 
      * of the REPL and how they connect to each other...
