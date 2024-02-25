@@ -66,7 +66,13 @@ export function REPLInput(props: REPLInputProps) {
   viewCSV = function (args: Array<string>): string[][] {
     if (args.length === 0) {
       /* return mockedViewCsv(); */
-      return [["placeholder mockedView"]];
+      //   return [["placeholder mockedView"]];
+
+      /* TODO: remove before merging!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+      return [
+        ["cell1", "cell2"],
+        ["cell3", "cell4"],
+      ];
     } else {
       return [["viewcsv expects no arguments: view"]];
     }
@@ -119,7 +125,7 @@ export function REPLInput(props: REPLInputProps) {
     if (briefMode) {
       output = appropriateHandler(args);
     } else {
-      output = [["Command: " + commandString + "\n Output: "]].concat(
+      output = [["Command: " + commandString], ["Output: "]].concat(
         appropriateHandler(args)
       );
     }
