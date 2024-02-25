@@ -39,11 +39,17 @@ export function csvActions() {
     return [["Successfully loaded CSV at " + filepath]];
   }
 
-  // function mockedViewCsv(): string[][] {
-  //   if (currentCSV === undefined) {
-  //     return [["Attempted to view CSV before loading CSV"]];
-  //   } else {
-  //     return currentCSV;
-  //   }
-  // }
+  function mockedViewCsv(): string[][] {
+    if (currentCSV === undefined) {
+      return [["Attempted to view CSV before loading CSV"]];
+    } else {
+      return currentCSV.map((row, index) =>
+        row.map((cell, index) => cell.toString())
+      );
+    }
+  }
+
+  // module.exports{
+  //   mockedLoadCsv;
+  // };
 }
