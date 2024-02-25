@@ -8,11 +8,16 @@ interface REPLHistoryProps {
 export function REPLHistory(props: REPLHistoryProps) {
   return (
     <div className="repl-history" aria-label="repl-history">
-      {/* This is where command history will go */}
-      {/* TODO: To go through all the pushed commands... try the .map() function! */}
-      {/* CHANGED */}
       {props.history.map((command, index) => (
-        <p>{command}</p>
+        <table>
+          {command.map((row, index) => (
+            <tr>
+              {row.map((cell, index) => (
+                <td>{cell}</td>
+              ))}
+            </tr>
+          ))}
+        </table>
       ))}
     </div>
   );
