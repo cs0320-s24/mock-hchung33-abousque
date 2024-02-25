@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import "../styles/main.css";
 import { ControlledInput } from "./ControlledInput";
+import { csvActions } from "../mockedBackend/csvActions";
 
 interface REPLInputProps {
   // TODO: Fill this with desired props... Maybe something to keep track of the submitted commands
@@ -51,8 +52,8 @@ export function REPLInput(props: REPLInputProps) {
   let loadCSV: REPLFunction;
   loadCSV = function (args: Array<string>): string[][] {
     if (args.length === 1) {
-      /* return mockedLoadCsv(args[0]); */
-      return [["placeholder mockedLoad"]];
+      //   return csvActions(args[0]);
+      return [["placeholder mockedload"]];
     } else {
       return [["Indicate CSV file path: load_file <csv-file-path>"]];
     }
@@ -108,8 +109,10 @@ export function REPLInput(props: REPLInputProps) {
 
     if (!(command in commandFunctions)) {
       props.setHistory([...props.history, [["Entered unrecognized command"]]]);
+      setCommandString("");
       return;
     }
+
     const appropriateHandler: REPLFunction = commandFunctions[command];
 
     let output: string[][];
