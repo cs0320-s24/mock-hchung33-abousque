@@ -8,12 +8,12 @@ export const exampleCsvStrings = [
   ["first name", "last name", "age"],
   ["Harry", "Potter", "56"],
   ["Danny", "Fish", "23"],
-  ["John", "Harry", "12"],
+  ["Harry", "Harry", "12"],
 ];
 
 const exampleSearchResultStrings = [
   ["Harry", "Potter", "56"],
-  ["John", "Harry", "12"],
+  ["Harry", "Harry", "12"],
 ];
 
 const exampleCsvNumbers = [
