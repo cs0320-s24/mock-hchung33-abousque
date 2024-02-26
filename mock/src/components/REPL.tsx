@@ -2,7 +2,6 @@ import { useState } from 'react';
 import '../styles/main.css';
 import { REPLHistory } from './REPLHistory';
 import { REPLInput } from './REPLInput';
-import {Mode} from './Mode';
 
 /* 
   You'll want to expand this component (and others) for the sprints! Remember 
@@ -27,7 +26,6 @@ export default function REPL() {
       <hr></hr>
       {/* CHANGED */}
       <REPLInput history={history} setHistory={setHistory}/>
-
     </div>
   );
 }
