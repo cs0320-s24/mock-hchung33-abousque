@@ -12,27 +12,32 @@ const exampleSearchResultStrings = mockedJson.exampleSearchResultStrings;
 const exampleCsvNumbers = mockedJson.exampleCsvNumbers;
 const exampleSearchResultNumbers = mockedJson.exampleSearchResultNumbers;
 
-const filepathToData = new Map<string, string[][] | number[][]>([
-  ["names_and_ages.csv", exampleCsvStrings],
-  ["numbers.csv", exampleCsvNumbers],
-  ["one_row.csv", oneRow],
-  ["one_col.csv", oneCol],
-  //   ["empty.csv", emptyResult],
-]);
-
-const dataToFilepath = new Map<string[][] | number[][], string>([
-  [exampleCsvStrings, "names_and_ages.csv"],
-  [exampleCsvNumbers, "numbers.csv"],
-  [oneRow, "one_row.csv"],
-  [oneCol, "one_col.csv"],
-  //   [emptyResult], "empty.csv"],
-]);
+interface CSVActions{
+  mockedCSV(filepath: string) : string[][];
+  mockedViewCSV : string[][];
+}
 
 export function csvActions() {
   const [currentCSV, setCurrentCSV] = useState<string[][] | number[][]>();
 
+  const filepathToData = new Map<string, string[][] | number[][]>([
+    ["names_and_ages.csv", exampleCsvStrings],
+    ["numbers.csv", exampleCsvNumbers],
+    ["one_row.csv", oneRow],
+    ["one_col.csv", oneCol],
+    //   ["empty.csv", emptyResult],
+  ]);
+
+  const dataToFilepath = new Map<string[][] | number[][], string>([
+    [exampleCsvStrings, "names_and_ages.csv"],
+    [exampleCsvNumbers, "numbers.csv"],
+    [oneRow, "one_row.csv"],
+    [oneCol, "one_col.csv"],
+    //   [emptyResult], "empty.csv"],
+  ]);
+
   function mockedLoadCsv(filepath: string): string[][] {
-    if (!(filepath in filepathToData)) {
+    if (!filepathToData.has(filepath)) {
       return [["Invalid filepath"]];
     }
     setCurrentCSV(filepathToData.get(filepath));
@@ -49,7 +54,6 @@ export function csvActions() {
     }
   }
 
-  // module.exports{
-  //   mockedLoadCsv;
-  // };
+  return {mockedLoadCsv, mockedViewCsv}
+
 }
