@@ -16,6 +16,7 @@ export default function REPL() {
   // TODO: Add some kind of shared state that holds all the commands submitted.
   // CHANGED
   const [history, setHistory] = useState<string[][][]>([])
+  const [brief, setBrief] = useState<boolean>(true);
 
   return (
     <div className="repl">  
