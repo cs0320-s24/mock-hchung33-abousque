@@ -125,9 +125,9 @@ export function REPLInput(props: REPLInputProps) {
     if (briefMode) {
       output = appropriateHandler(args);
     } else {
-      output = [["Command: " + commandString], ["Output: "]].concat(
-        appropriateHandler(args)
-      );
+      output = [["Command: " + commandString]]
+        .concat([["Output: "]])
+        .concat(appropriateHandler(args));
     }
     props.setHistory([...props.history, output]);
     setCommandString("");
