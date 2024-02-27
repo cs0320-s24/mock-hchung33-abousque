@@ -1,8 +1,7 @@
-import { Dispatch, SetStateAction, useState} from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import "../styles/main.css";
 import { ControlledInput } from "./ControlledInput";
 import { csvActions } from "../mockedBackend/csvActions";
-
 
 interface REPLInputProps {
   history: string[][][];
@@ -10,12 +9,12 @@ interface REPLInputProps {
 }
 
 /**
- * A command-processor function for our REPL. 
- * The function takes an array of string arguments and does not return anything. 
+ * A command-processor function for our REPL.
+ * The function takes an array of string arguments and does not return anything.
  * REPLFunctions send their results directly to REPLHistory to display.
  */
 export interface REPLFunction {
-  (args: Array<string>) : void;
+  (args: Array<string>): void;
 }
 
 export function REPLInput(props: REPLInputProps) {
@@ -36,15 +35,21 @@ export function REPLInput(props: REPLInputProps) {
         output = [["Mode set to brief"]];
       } else if (args[1] === "verbose") {
         setBriefMode(false);
-        output = [["Command: " + args[0] + " " + args[1]]].concat([["Output: Mode set to verbose"]]);
+        output = [["Command: " + args[0] + " " + args[1]]].concat([
+          ["Output: Mode set to verbose"],
+        ]);
       } else {
         output = [["Wrong argument provided to mode: mode <brief OR verbose>"]];
       }
     } else {
       if (briefMode) {
-        output = [["Wrong number of arguments provided: mode <brief OR verbose>"]];
+        output = [
+          ["Wrong number of arguments provided: mode <brief OR verbose>"],
+        ];
       } else {
-        output = [["Command: " + args[0] + " " + args[1]]].concat([["Wrong number of arguments provided: mode <brief OR verbose>"]]);
+        output = [["Command: " + args[0] + " " + args[1]]].concat([
+          ["Wrong number of arguments provided: mode <brief OR verbose>"],
+        ]);
       }
     }
     props.setHistory([...props.history, output]);
@@ -58,12 +63,12 @@ export function REPLInput(props: REPLInputProps) {
     let rawOutput: string[][];
     let formattedOutput: string[][];
     if (args.length === 2) {
-      rawOutput = mockedLoadCsv(args[1]);    
+      rawOutput = mockedLoadCsv(args[1]);
     } else {
       rawOutput = [["Indicate CSV file path: load_file <csv-file-path>"]];
     }
     if (briefMode) {
-      formattedOutput = rawOutput; 
+      formattedOutput = rawOutput;
     } else {
       formattedOutput = [["Command: " + args[0] + " " + args[1]]]
         .concat([["Output: "]])
@@ -78,20 +83,20 @@ export function REPLInput(props: REPLInputProps) {
   let viewCSV: REPLFunction;
   viewCSV = function (args: Array<string>) {
     let rawOutput: string[][];
-    let formattedOutput: string[][];
+    let formattedOutput: string[][][];
     if (args.length === 1) {
-      rawOutput = mockedViewCsv();    
+      rawOutput = mockedViewCsv();
     } else {
       rawOutput = [["viewcsv expects no arguments: view"]];
     }
     if (briefMode) {
-      formattedOutput = rawOutput; 
+      formattedOutput = [rawOutput];
     } else {
-      formattedOutput = [["Command: " + args[0]]]
-        .concat([["Output: "]])
-        .concat(rawOutput);
+      formattedOutput = [[["Command: " + args[0]]]]
+        .concat([[["Output: "]]])
+        .concat([rawOutput]);
     }
-    props.setHistory([...props.history, formattedOutput]);
+    props.setHistory([...props.history].concat(formattedOutput));
   };
 
   /**
@@ -100,20 +105,22 @@ export function REPLInput(props: REPLInputProps) {
   let searchCSV: REPLFunction;
   searchCSV = function (args: Array<string>) {
     let rawOutput: string[][];
-    let formattedOutput: string[][];
+    let formattedOutput: string[][][];
     if (args.length === 3) {
-      rawOutput = mockedSearchCsv(args[1], args[2]);  
+      rawOutput = mockedSearchCsv(args[1], args[2]);
     } else {
       rawOutput = [["Search formatting incorrect: search <column> <value>"]];
     }
     if (briefMode) {
-      formattedOutput = rawOutput; 
+      formattedOutput = [rawOutput];
     } else {
-      formattedOutput = [["Command: " + args[0] + " " + args[1] + " " + args[2]]]
-        .concat([["Output: "]])
-        .concat(rawOutput);
+      formattedOutput = [
+        [["Command: " + args[0] + " " + args[1] + " " + args[2]]],
+      ]
+        .concat([[["Output: "]]])
+        .concat([rawOutput]);
     }
-    props.setHistory([...props.history, formattedOutput]);
+    props.setHistory([...props.history].concat(formattedOutput));
   };
 
   // map lookup to function for cmd
@@ -160,9 +167,7 @@ export function REPLInput(props: REPLInputProps) {
           ariaLabel={"Command input"}
         />
       </fieldset>
-      <button onClick={() => handleSubmit(commandString)}>
-        Submit
-      </button>
+      <button onClick={() => handleSubmit(commandString)}>Submit</button>
     </div>
   );
 }
