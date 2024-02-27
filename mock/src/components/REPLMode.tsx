@@ -15,7 +15,6 @@ export function changeMode(){
  * REPLFunction for setting mode.
  */
     const [brief, setBrief] = useState<boolean>(true);
-
     return {brief, setBrief};
 }
 
