@@ -13,14 +13,12 @@ interface REPLInputProps {
 }
 
 /**
- * A command-processor function for our REPL. The function returns a string, which is the value to print to history when
- * the command is done executing.
- *
- * The arguments passed in the input (which need not be named "args") should
- * *NOT* contain the command-name prefix.
+ * A command-processor function for our REPL.
+ * The function takes an array of string arguments and does not return anything.
+ * REPLFunctions send their results directly to REPLHistory to display.
  */
 export interface REPLFunction {
-  (args: Array<string>): string[][];
+  (args: Array<string>): void;
 }
 
 export function REPLInput(props: REPLInputProps) {
@@ -28,6 +26,7 @@ export function REPLInput(props: REPLInputProps) {
   const [count, setCount] = useState<number>(0);
   const [briefMode, setBriefMode] = useState<boolean>(true);
   const {mockedLoadCsv, mockedViewCsv, mockedSearchCsv} = csvActions();
+
 
   /**
    * REPLFunction for setting mode.
@@ -65,8 +64,16 @@ export function REPLInput(props: REPLInputProps) {
     if (args.length === 1) {
       return mockedLoadCsv(args[0]);
     } else {
-      return [["Indicate CSV file path: load_file <csv-file-path>"]];
+      rawOutput = [["Indicate CSV file path: load_file <csv-file-path>"]];
     }
+    if (briefMode) {
+      formattedOutput = rawOutput;
+    } else {
+      formattedOutput = [["Command: " + args[0] + " " + args[1]]]
+        .concat([["Output: "]])
+        .concat(rawOutput);
+    }
+    props.setHistory([...props.history, formattedOutput]);
   };
 
   /**
@@ -76,21 +83,32 @@ export function REPLInput(props: REPLInputProps) {
   viewCSV = function (args: Array<string>): string[][] {
     if (args.length === 0) {
       return mockedViewCsv();
+
     } else {
-      return [["viewcsv expects no arguments: view"]];
+      formattedOutput = [[["Command: " + args[0]]]]
+        .concat([[["Output: "]]])
+        .concat([rawOutput]);
     }
+    props.setHistory([...props.history].concat(formattedOutput));
   };
 
   /**
-   * REPLFunction for searching csv.
+   * REPLFunction handler for searching a loaded CSV.
    */
   let searchCSV: REPLFunction;
+
   searchCSV = function (args: Array<string>): string[][] {
     if (args.length === 2 || args.length === 3) {
       return mockedSearchCsv(args[0], args[1]);
+
     } else {
-      return [["Search formatting incorrect: search <value> <column>"]];
+      formattedOutput = [
+        [["Command: " + args[0] + " " + args[1] + " " + args[2]]],
+      ]
+        .concat([[["Output: "]]])
+        .concat([rawOutput]);
     }
+    props.setHistory([...props.history].concat(formattedOutput));
   };
 
   // map lookup to function for cmd
@@ -106,8 +124,10 @@ export function REPLInput(props: REPLInputProps) {
    */
   function handleSubmit(commandString: string) {
     const args = commandString.split(" ");
+
     const command: string = args[0];
     args.shift();
+
 
     if (!(command in commandFunctions)) {
       // props.setHistory([...props.history, [["Entered unrecognized command"]]]);
@@ -117,10 +137,12 @@ export function REPLInput(props: REPLInputProps) {
 
     const appropriateHandler: REPLFunction = commandFunctions[command];
 
+
     let output: string[][] = appropriateHandler(args);
     props.setHistory([...props.history, [[[commandString]], output]]);
     // props.setHistory([...props.history].concat([[[commandString]], output]));
     
+
     setCommandString("");
   }
 
@@ -130,10 +152,6 @@ export function REPLInput(props: REPLInputProps) {
    */
   return (
     <div className="repl-input">
-      {/* This is a comment within the JSX. Notice that it's a TypeScript comment wrapped in
-            braces, so that React knows it should be interpreted as TypeScript */}
-      {/* I opted to use this HTML tag; you don't need to. It structures multiple input fields
-            into a single unit, which makes it easier for screenreaders to navigate. */}
       <fieldset>
         <legend>Enter a command:</legend>
         <ControlledInput
@@ -142,10 +160,12 @@ export function REPLInput(props: REPLInputProps) {
           ariaLabel={"Command input"}
         />
       </fieldset>
+
       {/* TODO: Currently this button just counts up, can we make it push the contents of the input box to the history?*/}
       <button onClick={() => handleSubmit(commandString)}>
         Submit
       </button>
+
     </div>
   );
 }

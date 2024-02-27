@@ -9,13 +9,7 @@ interface REPLHistoryProps {
 
 export function REPLHistory(props: REPLHistoryProps) {
 
-  // function briefHistory(output: string[][]){
-    
-  // }
 
-  // function verboseHistory(command: string[][], output: string[][]){
-    
-  // }
 
   function outputHTML(command: string[][][]) {
     const output: string[][] = command[1];
@@ -29,6 +23,7 @@ export function REPLHistory(props: REPLHistoryProps) {
             </tr>
           ))}
         </table>
+
     )
   }
 
