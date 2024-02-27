@@ -9,10 +9,10 @@ export function REPLHistory(props: REPLHistoryProps) {
   return (
     <div className="repl-history" aria-label="repl-history">
       {props.history.map((command, index) => (
-        // each command output is its own table
+        // each piece of output is its own table
         <table>
           {command.map((row, index) => (
-            // command vs. output vs. csv output row are their own newlines
+            // command vs. output vs. csv output row are their own rows
             <tr>
               {row.map((cell, index) => (
                 // each element is in its own cell (col) within row
