@@ -59,24 +59,16 @@ test('on page load, i see a button', async ({ page }) => {
   // CHANGED
   await page.goto('http://localhost:8000/');
   await page.getByLabel('Login').click();
-  await expect(page.getByRole('button', {name: 'Submitted 0 times'})).toBeVisible()
+  await expect(page.getByRole('button', {name: 'Submit'})).toBeVisible()
 });
 
-test('after I click the button, its label increments', async ({ page }) => {
-  // CHANGED
-  await page.goto('http://localhost:8000/');
-  await page.getByLabel('Login').click();
-  await expect(page.getByRole('button', {name: 'Submitted 0 times'})).toBeVisible()
-  await page.getByRole('button', {name: 'Submitted 0 times'}).click()
-  await expect(page.getByRole('button', {name: 'Submitted 1 times'})).toBeVisible()
-});
 
 test('after I click the button, my command gets pushed', async ({ page }) => {
   // CHANGED
   await page.goto('http://localhost:8000/');
   await page.getByLabel('Login').click();
   await page.getByLabel('Command input').fill('Awesome command');
-  await page.getByRole('button', {name: 'Submitted 0 times'}).click()
+  await page.getByRole('button', {name: 'Submit'}).click()
 
   // you can use page.evaulate to grab variable content from the page for more complex assertions
   const firstChild = await page.evaluate(() => {

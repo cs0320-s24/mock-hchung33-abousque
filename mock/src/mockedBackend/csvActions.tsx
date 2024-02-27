@@ -10,12 +10,20 @@ const exampleSearchResultStrings = mockedJson.exampleSearchResultStrings;
 const exampleCsvNumbers = mockedJson.exampleCsvNumbers;
 const exampleSearchResultNumbers = mockedJson.exampleSearchResultNumbers;
 
+/**
+ * Contains functions for mocked versions of loadCsv, viewCsv, and searchCsv backend.
+ */
 interface CSVActions {
-  mockedCSV(filepath: string): string[][];
+  mockedLoadCSV(filepath: string): string[][];
   mockedViewCSV: string[][];
   mockedSearchCSV(column: string | number, value: string): string[][];
 }
 
+/**
+ * Mocks execution of load, view, and search csv functionality.
+ * 
+ * @returns the 3 mocked functions: mockedLoadCsv, mockedViewCsv, and mockedSearchCsv
+ */
 export function csvActions() {
   const [currentCSVPath, setCurrentCSVPath] = useState<string>();
   const [currentCSV, setCurrentCSV] = useState<string[][] | number[][]>();
@@ -33,6 +41,12 @@ export function csvActions() {
     ["numbers.csv", exampleSearchResultNumbers],
   ]);
 
+  /**
+   * Mocks load functionality for a CSV at a certain (fake) filepath.
+   * 
+   * @param filepath the fake filepath to load the CSV of interest from
+   * @returns a string[][] the output of executing the load command
+   */
   function mockedLoadCsv(filepath: string): string[][] {
     if (!filepathToData.has(filepath)) {
       return [["Invalid filepath"]];
@@ -42,6 +56,11 @@ export function csvActions() {
     return [["Successfully loaded CSV at " + filepath]];
   }
 
+  /**
+   * Mocks view functionality for a previously "loaded" (mocked) CSV.
+   * 
+   * @returns a string[][] the output of executing the view command
+   */
   function mockedViewCsv(): string[][] {
     if (currentCSVPath === undefined || currentCSV === undefined) {
       return [["Attempted to view CSV before loading CSV"]];
@@ -52,6 +71,13 @@ export function csvActions() {
     }
   }
 
+  /**
+   * Mocks search functionality for a previously "loaded" (mocked) CSV.
+   * 
+   * @param column the column name or index to search in
+   * @param value the string value to search for
+   * @returns a string[][] the output of executing the search command
+   */
   function mockedSearchCsv(column: string | number, value: string): string[][] {
     if (currentCSVPath === undefined) {
       return [["Atempted to search CSV before loading CSV"]];
@@ -67,7 +93,7 @@ export function csvActions() {
     }
   }
 
+  // Return to use in REPLInput
   return {mockedLoadCsv, mockedViewCsv, mockedSearchCsv}
-
 }
 

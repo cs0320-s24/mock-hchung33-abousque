@@ -3,6 +3,10 @@ import "../styles/main.css";
 import { ControlledInput } from "./ControlledInput";
 import { csvActions } from "../mockedBackend/csvActions";
 
+/**
+ * This is the REPLInputProps, which contains history and brief, and respective
+ * setHistory and setBrief. Mode switch occures with the boolean value of brief.
+ */
 interface REPLInputProps {
   history: string[][][][];
   setHistory: Dispatch<SetStateAction<string[][][][]>>;
@@ -11,28 +15,32 @@ interface REPLInputProps {
 }
 
 /**
- * A command-processor function for our REPL. The function returns a string, which is the value to print to history when
- * the command is done executing.
- *
- * The arguments passed in the input (which need not be named "args") should
- * *NOT* contain the command-name prefix.
+ * A command-processor function for our REPL. The function returns a string, 
+ * which is the value to print to history when the command is done executing.
  */
 export interface REPLFunction {
   (args: Array<string>): string[][];
 }
 
+/**
+ * Main function for REPLInput that parses the user's input command and calls
+ * the appropriate REPLFunction to handle the command using a Map
+ * 
+ * @param props REPLInputProps
+ * @returns returns a HTML object that handles command input
+ */
 export function REPLInput(props: REPLInputProps) {
   const [commandString, setCommandString] = useState<string>("");
-  const [count, setCount] = useState<number>(0);
-  const [briefMode, setBriefMode] = useState<boolean>(true);
   const { mockedLoadCsv, mockedViewCsv, mockedSearchCsv } = csvActions();
 
   /**
    * REPLFunction for setting mode.
+   * 
+   * @param args a list of the arguments provided by the user following their command
+   * @returns a string[][] the output of executing the mode command with args
    */
   let setMode: REPLFunction;
   setMode = function (args: Array<string>): string[][] {
-    let briefMode;
     let output;
     if (args.length === 1) {
       if (args[0] === "brief") {
@@ -54,6 +62,9 @@ export function REPLInput(props: REPLInputProps) {
 
   /**
    * REPLFunction for loading csv.
+   * 
+   * @param args a list of the arguments provided by the user following their command
+   * @returns a string[][] the output of executing the load_file command with args
    */
   let loadCSV: REPLFunction;
   loadCSV = function (args: Array<string>): string[][] {
@@ -66,6 +77,9 @@ export function REPLInput(props: REPLInputProps) {
 
   /**
    * REPLFunction for viewing csv.
+   * 
+   * @param args a list of the arguments provided by the user following their command
+   * @returns a string[][] the output of executing the view command with args
    */
   let viewCSV: REPLFunction;
   viewCSV = function (args: Array<string>): string[][] {
@@ -78,6 +92,9 @@ export function REPLInput(props: REPLInputProps) {
 
   /**
    * REPLFunction for searching csv.
+   * 
+   * @param args a list of the arguments provided by the user following their command
+   * @returns a string[][] the output of executing the search command with args
    */
   let searchCSV: REPLFunction;
   searchCSV = function (args: Array<string>): string[][] {
@@ -88,7 +105,7 @@ export function REPLInput(props: REPLInputProps) {
     }
   };
 
-  // map lookup to function for cmd
+  // Map that allows the program to look up REPLFunction from command
   var commandFunctions: { [cmd: string]: REPLFunction } = {
     mode: setMode,
     load_file: loadCSV,
@@ -98,21 +115,26 @@ export function REPLInput(props: REPLInputProps) {
 
   /**
    * Handler for Submit button. Error checks and executes valid user command.
+   * 
+   * @param commandString the user inputted string detailing their command
    */
   function handleSubmit(commandString: string) {
     const args = commandString.split(" ");
     const command: string = args[0];
     args.shift();
 
+    // If command does not exist in Map, returns an error message
     if (!(command in commandFunctions)) {
       props.setHistory([...props.history, [[[commandString]], [["Entered unrecognized command"]]]]);
       setCommandString("");
       return;
     }
 
+    // Retrieves the appropriate REPLFunction
     const appropriateHandler: REPLFunction = commandFunctions[command];
 
     let output: string[][] = appropriateHandler(args);
+    // Adds to REPLHistory
     props.setHistory([...props.history, [[[commandString]], output]]);
     setCommandString("");
   }
