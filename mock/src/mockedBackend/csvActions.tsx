@@ -28,14 +28,6 @@ export function csvActions() {
     //   ["empty.csv", emptyResult],
   ]);
 
-  // const dataToFilepath = new Map<string[][] | number[][], string>([
-  //   [exampleCsvStrings, "names_and_ages.csv"],
-  //   [exampleCsvNumbers, "numbers.csv"],
-  //   [oneRow, "one_row.csv"],
-  //   [oneCol, "one_col.csv"],
-  //   //   [emptyResult], "empty.csv"],
-  // ]);
-
   const fileToSearchResult = new Map<string, string[][] | number[][]>([
     ["names_and_ages.csv", exampleSearchResultStrings],
     ["numbers.csv", exampleSearchResultNumbers],

@@ -4,8 +4,6 @@ import { ControlledInput } from "./ControlledInput";
 import { csvActions } from "../mockedBackend/csvActions";
 
 interface REPLInputProps {
-  // TODO: Fill this with desired props... Maybe something to keep track of the submitted commands
-  // CHANGED
   history: string[][][][];
   setHistory: Dispatch<SetStateAction<string[][][][]>>;
   brief: boolean;
@@ -38,24 +36,19 @@ export function REPLInput(props: REPLInputProps) {
     let output;
     if (args.length === 1) {
       if (args[0] === "brief") {
-        // briefMode = true;
         props.setBrief(true);
         output = [["Mode set to brief"]];
       } else if (args[0] === "verbose") {
-        // briefMode = false;
         props.setBrief(false);
         output = [["Mode set to verbose"]];
       } else {
-        // briefMode = props.brief;
         output = [["Wrong argument provided to mode: mode <brief OR verbose>"]];
       }
     } else {
-      // briefMode= props.brief;
       output = [
         ["Wrong number of arguments provided: mode <brief OR verbose>"],
       ];
     }
-    // props.setBrief(briefMode);
     return output;
   };
 
@@ -112,7 +105,7 @@ export function REPLInput(props: REPLInputProps) {
     args.shift();
 
     if (!(command in commandFunctions)) {
-      // props.setHistory([...props.history, [["Entered unrecognized command"]]]);
+      props.setHistory([...props.history, [[[commandString]], [["Entered unrecognized command"]]]]);
       setCommandString("");
       return;
     }
@@ -121,21 +114,11 @@ export function REPLInput(props: REPLInputProps) {
 
     let output: string[][] = appropriateHandler(args);
     props.setHistory([...props.history, [[[commandString]], output]]);
-    // props.setHistory([...props.history].concat([[[commandString]], output]));
-
     setCommandString("");
   }
 
-  /**
-   * We suggest breaking down this component into smaller components, think about the individual pieces
-   * of the REPL and how they connect to each other...
-   */
   return (
     <div className="repl-input">
-      {/* This is a comment within the JSX. Notice that it's a TypeScript comment wrapped in
-            braces, so that React knows it should be interpreted as TypeScript */}
-      {/* I opted to use this HTML tag; you don't need to. It structures multiple input fields
-            into a single unit, which makes it easier for screenreaders to navigate. */}
       <fieldset>
         <legend>Enter a command:</legend>
         <ControlledInput
@@ -144,7 +127,6 @@ export function REPLInput(props: REPLInputProps) {
           ariaLabel={"Command input"}
         />
       </fieldset>
-      {/* TODO: Currently this button just counts up, can we make it push the contents of the input box to the history?*/}
       <button onClick={() => handleSubmit(commandString)}>Submit</button>
     </div>
   );

@@ -1,15 +1,11 @@
 import "../styles/main.css";
 
 interface REPLHistoryProps {
-  // TODO: Fill with some shared state tracking all the pushed commands
-  // CHANGED
   history: string[][][][];
   brief: boolean;
 }
 
 export function REPLHistory(props: REPLHistoryProps) {
-
-
 
   function outputHTML(command: string[][][]) {
     const output: string[][] = command[1];
@@ -22,6 +18,7 @@ export function REPLHistory(props: REPLHistoryProps) {
               ))}
             </tr>
           ))}
+          <p> {" "} </p> {/* newline for readability */}
         </table>
 
     )
@@ -44,7 +41,6 @@ export function REPLHistory(props: REPLHistoryProps) {
           </td>
         </tr>
         {outputHTML(command)}
-        <p> {" "} </p> {/* newline for readability */}
       </table>
     )
   }
@@ -68,32 +64,4 @@ export function REPLHistory(props: REPLHistoryProps) {
     );
 
   }
-
-
-  
-  // return (
-  //   <div className="repl-history" aria-label="repl-history">
-  //     {props.history.map((command, index) => (
-  //       // each piece of output is its own table
-  //       <table>
-  //         const cmdPrompt = {command[0]};
-  //         const output: string[][] = {command[1]};
-          
-  //         if (!props.brief) {
-  //           <p> {"Command: " + cmdPrompt} </p>
-  //           <p> {"Output:"} </p>
-  //         }
-
-  //         // display output
-  //         {output.map((row, index) => (
-  //           <tr>
-  //             {row.map((cell, index) => (
-  //               <td>{cell}</td>
-  //             ))}
-  //           </tr>
-  //         ))}
-  //       </table>
-  //     ))}
-  //   </div>
-  // );
 }
