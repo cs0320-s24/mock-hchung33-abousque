@@ -15,8 +15,12 @@ interface REPLInputProps {
 }
 
 /**
- * A command-processor function for our REPL. The function returns a string, 
- * which is the value to print to history when the command is done executing.
+ * A command-processor function for our REPL.
+ * All functions intended for use with this front end should comply with the
+ * following specifications.
+ * 
+ * @param args an array of strings where each string is an argument following the command inputted by a user (e.g. if the user inputted "search this that", args would be ["this", "that"])
+ * @returns a string[][], the output data to display to the user, which can be a 2D array of string data, or in the case of an error message that message wrapped in a 2D array
  */
 export interface REPLFunction {
   (args: Array<string>): string[][];
@@ -71,7 +75,7 @@ export function REPLInput(props: REPLInputProps) {
     if (args.length === 1) {
       return mockedLoadCsv(args[0]);
     } else {
-      return [["Indicate CSV file path: load_file <csv-file-path>"]];
+      return [["Load formatting incorrect: load_file <csv-file-path>"]];
     }
   };
 
@@ -86,7 +90,7 @@ export function REPLInput(props: REPLInputProps) {
     if (args.length === 0) {
       return mockedViewCsv();
     } else {
-      return [["viewcsv expects no arguments: view"]];
+      return [["View formatting incorrect (expects no arguments): view"]];
     }
   };
 
@@ -119,6 +123,10 @@ export function REPLInput(props: REPLInputProps) {
    * @param commandString the user inputted string detailing their command
    */
   function handleSubmit(commandString: string) {
+    if (commandString === "") {
+      // do nothing if user entered nothing
+      return;
+    }
     const args = commandString.split(" ");
     const command: string = args[0];
     args.shift();
