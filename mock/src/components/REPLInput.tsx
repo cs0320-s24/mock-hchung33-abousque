@@ -4,8 +4,12 @@ import { ControlledInput } from "./ControlledInput";
 import { csvActions } from "../mockedBackend/csvActions";
 
 interface REPLInputProps {
-  history: string[][][];
-  setHistory: Dispatch<SetStateAction<string[][][]>>;
+  // TODO: Fill this with desired props... Maybe something to keep track of the submitted commands
+  // CHANGED
+  history: string[][][][];
+  setHistory: Dispatch<SetStateAction<string[][][][]>>;
+  brief: boolean;
+  setBrief: Dispatch<SetStateAction<boolean>>;
 }
 
 /**
@@ -21,49 +25,44 @@ export function REPLInput(props: REPLInputProps) {
   const [commandString, setCommandString] = useState<string>("");
   const [count, setCount] = useState<number>(0);
   const [briefMode, setBriefMode] = useState<boolean>(true);
-  const { mockedLoadCsv, mockedViewCsv, mockedSearchCsv } = csvActions();
+  const {mockedLoadCsv, mockedViewCsv, mockedSearchCsv} = csvActions();
+
 
   /**
    * REPLFunction for setting mode.
    */
   let setMode: REPLFunction;
-  setMode = function (args: Array<string>) {
-    let output: string[][];
-    if (args.length === 2) {
-      if (args[1] === "brief") {
-        setBriefMode(true);
+  setMode = function (args: Array<string>): string[][] {
+    let briefMode;
+    let output;
+    if (args.length === 1) {
+      if (args[0] === "brief"){
+        // briefMode = true;
+        props.setBrief(true);
         output = [["Mode set to brief"]];
-      } else if (args[1] === "verbose") {
-        setBriefMode(false);
-        output = [["Command: " + args[0] + " " + args[1]]].concat([
-          ["Output: Mode set to verbose"],
-        ]);
+      } else if (args[0] === "verbose") {
+        // briefMode = false;
+        props.setBrief(false);
+        output = [["Mode set to verbose"]];
       } else {
+        // briefMode = props.brief;
         output = [["Wrong argument provided to mode: mode <brief OR verbose>"]];
       }
     } else {
-      if (briefMode) {
-        output = [
-          ["Wrong number of arguments provided: mode <brief OR verbose>"],
-        ];
-      } else {
-        output = [["Command: " + args[0] + " " + args[1]]].concat([
-          ["Wrong number of arguments provided: mode <brief OR verbose>"],
-        ]);
-      }
+      // briefMode= props.brief;
+      output = [["Wrong number of arguments provided: mode <brief OR verbose>"]];
     }
-    props.setHistory([...props.history, output]);
+    // props.setBrief(briefMode);
+    return output;
   };
 
   /**
    * REPLFunction for loading csv.
    */
   let loadCSV: REPLFunction;
-  loadCSV = function (args: Array<string>) {
-    let rawOutput: string[][];
-    let formattedOutput: string[][];
-    if (args.length === 2) {
-      rawOutput = mockedLoadCsv(args[1]);
+  loadCSV = function (args: Array<string>): string[][] {
+    if (args.length === 1) {
+      return mockedLoadCsv(args[0]);
     } else {
       rawOutput = [["Indicate CSV file path: load_file <csv-file-path>"]];
     }
@@ -81,16 +80,10 @@ export function REPLInput(props: REPLInputProps) {
    * REPLFunction for viewing csv.
    */
   let viewCSV: REPLFunction;
-  viewCSV = function (args: Array<string>) {
-    let rawOutput: string[][];
-    let formattedOutput: string[][][];
-    if (args.length === 1) {
-      rawOutput = mockedViewCsv();
-    } else {
-      rawOutput = [["viewcsv expects no arguments: view"]];
-    }
-    if (briefMode) {
-      formattedOutput = [rawOutput];
+  viewCSV = function (args: Array<string>): string[][] {
+    if (args.length === 0) {
+      return mockedViewCsv();
+
     } else {
       formattedOutput = [[["Command: " + args[0]]]]
         .concat([[["Output: "]]])
@@ -103,16 +96,11 @@ export function REPLInput(props: REPLInputProps) {
    * REPLFunction handler for searching a loaded CSV.
    */
   let searchCSV: REPLFunction;
-  searchCSV = function (args: Array<string>) {
-    let rawOutput: string[][];
-    let formattedOutput: string[][][];
-    if (args.length === 3) {
-      rawOutput = mockedSearchCsv(args[1], args[2]);
-    } else {
-      rawOutput = [["Search formatting incorrect: search <column> <value>"]];
-    }
-    if (briefMode) {
-      formattedOutput = [rawOutput];
+
+  searchCSV = function (args: Array<string>): string[][] {
+    if (args.length === 2 || args.length === 3) {
+      return mockedSearchCsv(args[0], args[1]);
+
     } else {
       formattedOutput = [
         [["Command: " + args[0] + " " + args[1] + " " + args[2]]],
@@ -136,20 +124,25 @@ export function REPLInput(props: REPLInputProps) {
    */
   function handleSubmit(commandString: string) {
     const args = commandString.split(" ");
-    if (args.length === 0) {
-      // nothing entered
-      return;
-    }
-    const command: string = args[0].trim();
+
+    const command: string = args[0];
+    args.shift();
+
 
     if (!(command in commandFunctions)) {
-      props.setHistory([...props.history, [["Entered unrecognized command"]]]);
+      // props.setHistory([...props.history, [["Entered unrecognized command"]]]);
       setCommandString("");
       return;
     }
 
     const appropriateHandler: REPLFunction = commandFunctions[command];
-    appropriateHandler(args);
+
+
+    let output: string[][] = appropriateHandler(args);
+    props.setHistory([...props.history, [[[commandString]], output]]);
+    // props.setHistory([...props.history].concat([[[commandString]], output]));
+    
+
     setCommandString("");
   }
 
@@ -167,7 +160,12 @@ export function REPLInput(props: REPLInputProps) {
           ariaLabel={"Command input"}
         />
       </fieldset>
-      <button onClick={() => handleSubmit(commandString)}>Submit</button>
+
+      {/* TODO: Currently this button just counts up, can we make it push the contents of the input box to the history?*/}
+      <button onClick={() => handleSubmit(commandString)}>
+        Submit
+      </button>
+
     </div>
   );
 }
