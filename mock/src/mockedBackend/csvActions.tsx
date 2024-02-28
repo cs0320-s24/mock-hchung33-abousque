@@ -13,10 +13,10 @@ const exampleSearchResultNumbers = mockedJson.exampleSearchResultNumbers;
 /**
  * Contains functions for mocked versions of loadCsv, viewCsv, and searchCsv backend.
  */
-interface CSVActions {
-  mockedLoadCSV(filepath: string): string[][];
-  mockedViewCSV: string[][];
-  mockedSearchCSV(column: string | number, value: string): string[][];
+interface CSVActionsCollection {
+  mockedLoadCsv(filepath: string): string[][];
+  mockedViewCsv(): string[][];
+  mockedSearchCsv(column: string | number, value: string): string[][];
 }
 
 /**
@@ -24,7 +24,7 @@ interface CSVActions {
  *
  * @returns the 3 mocked functions: mockedLoadCsv, mockedViewCsv, and mockedSearchCsv
  */
-export function csvActions() {
+export function csvActions(): CSVActionsCollection {
   const [currentCSVPath, setCurrentCSVPath] = useState<string>();
   const [currentCSV, setCurrentCSV] = useState<string[][] | number[][]>();
 
@@ -94,5 +94,9 @@ export function csvActions() {
   }
 
   // Return to use in REPLInput
-  return { mockedLoadCsv, mockedViewCsv, mockedSearchCsv };
+  return {
+    mockedLoadCsv,
+    mockedViewCsv,
+    mockedSearchCsv,
+  };
 }
