@@ -18,9 +18,13 @@ interface REPLInputProps {
  * A command-processor function for our REPL.
  * All functions intended for use with this front end should comply with the
  * following specifications.
- * 
- * @param args an array of strings where each string is an argument following the command inputted by a user (e.g. if the user inputted "search this that", args would be ["this", "that"])
- * @returns a string[][], the output data to display to the user, which can be a 2D array of string data, or in the case of an error message that message wrapped in a 2D array
+ *
+ * @param args an array of strings where each string is an argument following
+ * the command inputted by a user (e.g. if the user inputted "search this that",
+ * args would be ["this", "that"])
+ * @returns a string[][], the output data to display to the user, which can be
+ * a 2D array of string data, or in the case of an error message that message
+ * wrapped in a 2D array
  */
 export interface REPLFunction {
   (args: Array<string>): string[][];
@@ -29,7 +33,7 @@ export interface REPLFunction {
 /**
  * Main function for REPLInput that parses the user's input command and calls
  * the appropriate REPLFunction to handle the command using a Map
- * 
+ *
  * @param props REPLInputProps
  * @returns returns a HTML object that handles command input
  */
@@ -39,7 +43,7 @@ export function REPLInput(props: REPLInputProps) {
 
   /**
    * REPLFunction for setting mode.
-   * 
+   *
    * @param args a list of the arguments provided by the user following their command
    * @returns a string[][] the output of executing the mode command with args
    */
@@ -66,7 +70,7 @@ export function REPLInput(props: REPLInputProps) {
 
   /**
    * REPLFunction for loading csv.
-   * 
+   *
    * @param args a list of the arguments provided by the user following their command
    * @returns a string[][] the output of executing the load_file command with args
    */
@@ -81,7 +85,7 @@ export function REPLInput(props: REPLInputProps) {
 
   /**
    * REPLFunction for viewing csv.
-   * 
+   *
    * @param args a list of the arguments provided by the user following their command
    * @returns a string[][] the output of executing the view command with args
    */
@@ -96,7 +100,7 @@ export function REPLInput(props: REPLInputProps) {
 
   /**
    * REPLFunction for searching csv.
-   * 
+   *
    * @param args a list of the arguments provided by the user following their command
    * @returns a string[][] the output of executing the search command with args
    */
@@ -119,7 +123,7 @@ export function REPLInput(props: REPLInputProps) {
 
   /**
    * Handler for Submit button. Error checks and executes valid user command.
-   * 
+   *
    * @param commandString the user inputted string detailing their command
    */
   function handleSubmit(commandString: string) {
@@ -133,7 +137,10 @@ export function REPLInput(props: REPLInputProps) {
 
     // If command does not exist in Map, returns an error message
     if (!(command in commandFunctions)) {
-      props.setHistory([...props.history, [[[commandString]], [["Entered unrecognized command"]]]]);
+      props.setHistory([
+        ...props.history,
+        [[[commandString]], [["Entered unrecognized command"]]],
+      ]);
       setCommandString("");
       return;
     }

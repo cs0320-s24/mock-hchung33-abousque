@@ -21,7 +21,7 @@ interface CSVActions {
 
 /**
  * Mocks execution of load, view, and search csv functionality.
- * 
+ *
  * @returns the 3 mocked functions: mockedLoadCsv, mockedViewCsv, and mockedSearchCsv
  */
 export function csvActions() {
@@ -43,7 +43,7 @@ export function csvActions() {
 
   /**
    * Mocks load functionality for a CSV at a certain (fake) filepath.
-   * 
+   *
    * @param filepath the fake filepath to load the CSV of interest from
    * @returns a string[][] the output of executing the load command
    */
@@ -58,7 +58,7 @@ export function csvActions() {
 
   /**
    * Mocks view functionality for a previously "loaded" (mocked) CSV.
-   * 
+   *
    * @returns a string[][] the output of executing the view command
    */
   function mockedViewCsv(): string[][] {
@@ -73,7 +73,7 @@ export function csvActions() {
 
   /**
    * Mocks search functionality for a previously "loaded" (mocked) CSV.
-   * 
+   *
    * @param column the column name or index to search in
    * @param value the string value to search for
    * @returns a string[][] the output of executing the search command
@@ -94,6 +94,5 @@ export function csvActions() {
   }
 
   // Return to use in REPLInput
-  return {mockedLoadCsv, mockedViewCsv, mockedSearchCsv}
+  return { mockedLoadCsv, mockedViewCsv, mockedSearchCsv };
 }
-
