@@ -10,6 +10,8 @@ const exampleCsvNumbers = mockedJson.exampleCsvNumbers;
 const exampleSearchResultNumbers = mockedJson.exampleSearchResultNumbers;
 const oneColSearchResult = mockedJson.oneColSearchResult;
 const oneRowSearchResult = mockedJson.oneRowSearchResult;
+const exampleIncomeCsv = mockedJson.exampleIncomeCsv;
+const exampleIncomeSearchResult = mockedJson.exampleIncomeSearchResult;
 
 /**
  * Contains functions for mocked versions of loadCsv, viewCsv, and searchCsv backend.
@@ -34,6 +36,7 @@ export function csvActions(): CSVActionsCollection {
     ["numbers.csv", exampleCsvNumbers],
     ["one_row.csv", oneRow],
     ["one_col.csv", oneCol],
+    ["income.csv", exampleIncomeCsv],
   ]);
 
   const fileToSearchResult = new Map<string, string[][] | number[][]>([
@@ -41,6 +44,7 @@ export function csvActions(): CSVActionsCollection {
     ["numbers.csv", exampleSearchResultNumbers],
     ["one_row.csv", oneRowSearchResult],
     ["one_col.csv", oneColSearchResult],
+    ["income.csv", exampleIncomeSearchResult],
   ]);
 
   /**
