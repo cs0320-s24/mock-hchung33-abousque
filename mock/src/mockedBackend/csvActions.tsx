@@ -41,7 +41,7 @@ export function csvActions(): CSVActionsCollection {
     ["malformed.csv", malformedCsv],
   ]);
 
-  const fileToSearchResult = new Map<string, string[][] | number[][]>([
+  const filepathToSearchResult = new Map<string, string[][] | number[][]>([
     ["names_and_ages.csv", exampleSearchResultStrings],
     ["numbers.csv", exampleSearchResultNumbers],
     ["one_row.csv", oneRowSearchResult],
@@ -92,7 +92,7 @@ export function csvActions(): CSVActionsCollection {
     if (currentCSVPath === undefined || currentCSV === undefined) {
       return [["Atempted to search CSV before loading CSV"]];
     } else {
-      const result = fileToSearchResult.get(currentCSVPath);
+      const result = filepathToSearchResult.get(currentCSVPath);
       if (result === undefined) {
         return [["Internal error in search. Concerning developer bug."]];
       } else {
