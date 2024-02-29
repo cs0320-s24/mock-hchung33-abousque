@@ -1,20 +1,6 @@
 import { expect, test } from "@playwright/test";
 
 /**
-  The general shapes of tests in Playwright Test are:
-    1. Navigate to a URL
-    2. Interact with the page
-    3. Assert something about the page against your expectations
-  Look for this pattern in the tests below!
- */
-
-// If you needed to do something before every test case...
-test.beforeEach(() => {
-  // ... you'd put it here.
-  // TODO: Is there something we need to do before every test case to avoid repeating code?
-});
-
-/**
  * Test visible login button.
  */
 test("on page load, i see a login button", async ({ page }) => {
@@ -915,6 +901,7 @@ test("after attempting to load a nonexistent file, I can load a real one, in bri
   await page.getByLabel("Login").click();
   await page.getByLabel("Command input").click();
 
+  // nonexistent file
   let command = "load_file fake_filepath.csv";
   let data = [["Invalid filepath"]];
   let expectedResponse = data
@@ -934,6 +921,26 @@ test("after attempting to load a nonexistent file, I can load a real one, in bri
   });
   expect(replHistory).toContain(expectedResponse);
 
+  // attempt to load with wrong number args
+  command = "load_file";
+  data = [["Load formatting incorrect: load_file csv-file-path"]];
+  expectedResponse = data
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[1]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedResponse);
+
+  // good file
   command = "load_file numbers.csv";
   data = [["Successfully loaded CSV at numbers.csv"]];
   expectedResponse = data
@@ -949,7 +956,7 @@ test("after attempting to load a nonexistent file, I can load a real one, in bri
   await page.getByRole("button", { name: "Submit" }).click();
   replHistory = await page.evaluate(() => {
     const history = document.querySelector(".repl-history");
-    return history?.children[1]?.innerHTML; // Extracting HTML table content
+    return history?.children[2]?.innerHTML; // Extracting HTML table content
   });
   expect(replHistory).toContain(expectedResponse);
 });
@@ -997,7 +1004,7 @@ test("after attempting to load a nonexistent file, I can load a real one, in ver
 
   // attempt to load with wrong number args
   command = "load_file";
-  data = [["Load formatting incorrect: load_file <csv-file-path>"]];
+  data = [["Load formatting incorrect: load_file csv-file-path"]];
   expectedResponse = data
     .map(
       (row, index) =>
@@ -1050,112 +1057,634 @@ test("after attempting to load a nonexistent file, I can load a real one, in ver
   );
 });
 
-// /**
-//  * Test (BRIEF)
-//  */
-// test(", in brief", async ({ page }) => {
-//   await page.goto("http://localhost:8000/");
-//   await page.getByLabel("Login").click();
-//   await page.getByLabel("Command input").click();
+/**
+ * Test state interactions between load, view, search, and mode.
+ * Load, search, view multiple files in a row. (BRIEF AND VERBOSE)
+ */
+test("I can load, view, search different files in one session", async ({
+  page,
+}) => {
+  await page.goto("http://localhost:8000/");
+  await page.getByLabel("Login").click();
+  await page.getByLabel("Command input").click();
 
-//   const command = "";
-//   const data = [];
-//   const expectedResponse = data
-//     .map(
-//       (row, index) =>
-//         "<tr>" +
-//         row.map((cell, index) => "<td>" + cell + "</td>").join("") +
-//         "</tr>"
-//     )
-//     .join("");
+  // load file 1
+  let command = "load_file numbers.csv";
+  let data;
+  let expectedResponse = [["Successfully loaded CSV at numbers.csv"]]
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
 
-//   await page.getByLabel("Command input").fill(command);
-//   await page.getByRole("button", { name: "Submit" }).click();
-//   let replHistory = await page.evaluate(() => {
-//     const history = document.querySelector(".repl-history");
-//     return history?.children[0]?.innerHTML; // Extracting HTML table content
-//   });
-//     expect(replHistory).toContain(expectedResponse);
-// });
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  let replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[0]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedResponse);
 
-// /**
-//  * Test (VERBOSE)
-//  */
-// test(", in verbose", async ({ page }) => {
-//   await page.goto("http://localhost:8000/");
-//   await page.getByLabel("Login").click();
-//   await page.getByLabel("Command input").click();
+  // switch to verbose mode
+  await page.getByLabel("Command input").fill("mode verbose");
+  await page.getByRole("button", { name: "Submit" }).click();
 
-//   const command = "";
-//   const data = [];
-//   const expectedResponse = data
-//     .map(
-//       (row, index) =>
-//         "<tr>" +
-//         row.map((cell, index) => "<td>" + cell + "</td>").join("") +
-//         "</tr>"
-//     )
-//     .join("");
+  // view file 1
+  command = "view";
+  data = [
+    [1, 2, 3, 4, 5],
+    [5, 4, 3, 2, 1],
+    [0, 1, 0, 1, 0],
+  ];
+  expectedResponse = data
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
 
-//   // set verbose mode
-//   await page.getByLabel("Command input").fill("mode verbose");
-//   await page.getByRole("button", { name: "Submit" }).click();
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[2]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(
+    "<tr><td>Command: " +
+      command +
+      "</td></tr><tr><td>Output:</td></tr>" +
+      "<table>" +
+      expectedResponse +
+      "<p></p></table>"
+  );
 
-//   // user command to test
-//   await page.getByLabel("Command input").fill(command);
-//   await page.getByRole("button", { name: "Submit" }).click();
-//   let replHistory = await page.evaluate(() => {
-//     const history = document.querySelector(".repl-history");
-//     return history?.children[1]?.innerHTML; // Extracting HTML table content
-//   });
-//   expect(replHistory).toContain(
-//     "<tr><td>Command: " +
-//       command +
-//       "</td></tr><tr><td>Output:</td></tr>" +
-//       "<table>" +
-//       expectedResponse +
-//       "<p></p></table>"
-//   );
-// });
+  // search file 1
+  command = "search 1 1";
+  data = [[0, 1, 0, 1, 0]];
+  expectedResponse = data
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[3]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(
+    "<tr><td>Command: " +
+      command +
+      "</td></tr><tr><td>Output:</td></tr>" +
+      "<table>" +
+      expectedResponse +
+      "<p></p></table>"
+  );
+
+  // load new file (file 2)
+  command = "load_file names_and_ages.csv";
+  expectedResponse = [["Successfully loaded CSV at names_and_ages.csv"]]
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[4]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedResponse);
+
+  // search file 2
+  command = "search 0 Harry";
+  data = [
+    ["Harry", "Potter", "56"],
+    ["Harry", "Harry", "12"],
+  ];
+  expectedResponse = data
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[5]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(
+    "<tr><td>Command: " +
+      command +
+      "</td></tr><tr><td>Output:</td></tr>" +
+      "<table>" +
+      expectedResponse +
+      "<p></p></table>"
+  );
+
+  // switch back to brief mode
+  await page.getByLabel("Command input").fill("mode brief");
+  await page.getByRole("button", { name: "Submit" }).click();
+
+  // view file 2
+  command = "view";
+  data = [
+    ["first_name", "last_name", "age"],
+    ["Harry", "Potter", "56"],
+    ["Danny", "Fish", "23"],
+    ["Harry", "Harry", "12"],
+  ];
+  expectedResponse = data
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[7]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedResponse);
+});
 
 /**
- * E2E
-//  * - can you enter text without hitting login
-//  * - can you logout then enter text
-//  * - entering nothing
-//  * - entering spaces
-//  * - entering nonexistent command
-//  * - load correct
-//  * - view correct big data numbers
-//  * - view correct big data strings
-//  * - view single col data
-//  * - view single row data
-//  * - search correct many rows/cols
-//  * - search with column in number, column in string
- * - mode with wrong number args
-//  * - load with wrong number args
- * - view with wrong number args
- * - search with wrong number args
- * - view before load
- * - search before load
- * - load with data not available
-//  * - wrong load then correct load
-//  * - load nonexistent file
- * - wrong view then correct view
- * - wrong search then correct search
- * - load then view then load then view
- * - load then search then load then search
- * - load then view then search then load then view
-//  * - output of mode verbose
-//  * - output of mode brief
- * - load then verbose then view
- * - load then search then verbose then search then brief then search
-//  * - search where result is empty
-//  * - search where result is 1 row
-//  * - search where result is many rows
-//  * - view with many rows/cols
-//  * - view numbers
-//  * - view strings
-//  * - log in, type valid command, log out, check that box is empty
-//  * - log in, type valid command, log out, log in, view (fails)
+ * Test state interactions between load, search, and mode.
+ * Search a file, switching mode several times. (BRIEF AND VERBOSE)
  */
+test("I can search switching results between brief and verbose", async ({
+  page,
+}) => {
+  await page.goto("http://localhost:8000/");
+  await page.getByLabel("Login").click();
+  await page.getByLabel("Command input").click();
+
+  // switch to verbose mode
+  await page.getByLabel("Command input").fill("mode verbose");
+  await page.getByRole("button", { name: "Submit" }).click();
+
+  // load file
+  let command = "load_file income.csv";
+  let data;
+  let expectedResponse = [["Successfully loaded CSV at income.csv"]]
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  let replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[1]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedResponse);
+
+  // search file
+  command = "search State RI";
+  data = [
+    ["RI", "White", "$1,058.47", "395773.6521", "$1.00", "75%"],
+    ["RI", "Black", "$770.26", "30424.80376", "$0.73", "6%"],
+    [
+      "RI",
+      "Native American/American Indian",
+      "$471.07",
+      "2315.505646",
+      "$0.45",
+      "0%",
+    ],
+    ["RI", "Asian-Pacific Islander", "$1,080.09", "18956.71657", "$1.02", "4%"],
+    ["RI", "Hispanic/Latino", "$673.14", "74596.18851", "$0.64", "14%"],
+    ["RI", "Multiracial", "$971.89", "8883.049171", "$0.92", "2%"],
+  ];
+  expectedResponse = data
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[2]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(
+    "<tr><td>Command: " +
+      command +
+      "</td></tr><tr><td>Output:</td></tr>" +
+      "<table>" +
+      expectedResponse +
+      "<p></p></table>"
+  );
+
+  // switch back to brief mode
+  await page.getByLabel("Command input").fill("mode brief");
+  await page.getByRole("button", { name: "Submit" }).click();
+
+  // search file (same search param)
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[4]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedResponse);
+
+  // switch back to verbose mode
+  await page.getByLabel("Command input").fill("mode verbose");
+  await page.getByRole("button", { name: "Submit" }).click();
+
+  // check previous search results are now in verbose
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[4]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(
+    "<tr><td>Command: " +
+      command +
+      "</td></tr><tr><td>Output:</td></tr>" +
+      "<table>" +
+      expectedResponse +
+      "<p></p></table>"
+  );
+});
+
+/**
+ * Test incorrect calls to view before a correct view command.
+ * Tests view with wrong number of arguments, viewing before loading. (BRIEF)
+ */
+test("Behavior when viewed with wrong number of arguments, viewed without loading, load successful file, and then view properly", async ({
+  page,
+}) => {
+  // Wrong argument number for View
+  await page.goto("http://localhost:8000/");
+  await page.getByLabel("Login").click();
+  await page.getByLabel("Command input").click();
+  const command = "view Hi Everyone";
+  const data = [["View formatting incorrect (expects no arguments): view"]];
+  const expectedResponse = data
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  let replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[0]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedResponse);
+
+  // Attempt to View before Load
+  await page.getByLabel("Command input").click();
+  const command2 = "view";
+  const data2 = [["Attempted to view CSV before loading CSV"]];
+  const expectedResponse2 = data2
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+  await page.getByLabel("Command input").fill(command2);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[1]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedResponse2);
+
+  await page.getByLabel("Command input").click();
+  const command3 = "load_file numbers.csv";
+  const data3 = [["Successfully loaded CSV at numbers.csv"]];
+  const expectedResponse3 = data3
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+  await page.getByLabel("Command input").fill(command3);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[2]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedResponse3);
+
+  await page.getByLabel("Command input").click();
+  const command4 = "view";
+  const data4 = [
+    [1, 2, 3, 4, 5],
+    [5, 4, 3, 2, 1],
+    [0, 1, 0, 1, 0],
+  ];
+  const expectedResponse4 = data4
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+  await page.getByLabel("Command input").fill(command4);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[3]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedResponse4);
+});
+
+/**
+ * Test incorrect calls to search before a correct search command.
+ * Tests search with wrong number of arguments, searching before loading. (BRIEF)
+ */
+test("Behavior when searched with wrong number of arguments, searched without loading, load successful file, and then search properly", async ({
+  page,
+}) => {
+  await page.goto("http://localhost:8000/");
+  await page.getByLabel("Login").click();
+  await page.getByLabel("Command input").click();
+
+  const command = "search 0 RI Wrong Arg";
+  const data = [["Search formatting incorrect: search value column"]];
+  const expectedResponse = data
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  let replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[0]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedResponse);
+
+  await page.getByLabel("Command input").click();
+  const command2 = "search State RI";
+  const data2 = [["Atempted to search CSV before loading CSV"]];
+  const expectedResponse2 = data2
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+  await page.getByLabel("Command input").fill(command2);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[1]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedResponse2);
+
+  await page.getByLabel("Command input").click();
+  const command3 = "load_file income.csv";
+  const data3 = [["Successfully loaded CSV at income.csv"]];
+  const expectedResponse3 = data3
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+  await page.getByLabel("Command input").fill(command3);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[2]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedResponse3);
+
+  await page.getByLabel("Command input").click();
+  const command4 = "search State RI";
+  const data4 = [
+    ["RI", "White", "$1,058.47", "395773.6521", "$1.00", "75%"],
+    ["RI", "Black", "$770.26", "30424.80376", "$0.73", "6%"],
+    [
+      "RI",
+      "Native American/American Indian",
+      "$471.07",
+      "2315.505646",
+      "$0.45",
+      "0%",
+    ],
+    ["RI", "Asian-Pacific Islander", "$1,080.09", "18956.71657", "$1.02", "4%"],
+    ["RI", "Hispanic/Latino", "$673.14", "74596.18851", "$0.64", "14%"],
+    ["RI", "Multiracial", "$971.89", "8883.049171", "$0.92", "2%"],
+  ];
+  const expectedResponse4 = data4
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+  await page.getByLabel("Command input").fill(command4);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[3]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedResponse4);
+});
+
+/**
+ * Test incorrect calls to mode before a correct mode command.
+ * Tests mode with wrong number of arguments, wrong arguments.
+ */
+test("Behavior when switching mode with wrong number of arguments, wrong arguments, and then calls mode properly", async ({
+  page,
+}) => {
+  // Wrong argument number for mode
+  await page.goto("http://localhost:8000/");
+  await page.getByLabel("Login").click();
+  await page.getByLabel("Command input").click();
+  const command = "mode";
+  const data = [["Wrong number of arguments provided: mode brief OR verbose"]];
+  const expectedResponse = data
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  let replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[0]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedResponse);
+
+  // mode with wrong argument
+  await page.getByLabel("Command input").click();
+  const command2 = "mode party_mode";
+  const data2 = [["Wrong argument provided to mode: mode brief OR verbose"]];
+  const expectedResponse2 = data2
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+  await page.getByLabel("Command input").fill(command2);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[1]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedResponse2);
+
+  // correct mode switch (brief -> verbose)
+  await page.getByLabel("Command input").click();
+  const command3 = "mode verbose";
+  const data3 = [["Mode set to verbose"]];
+  const expectedResponse3 = data3
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+  await page.getByLabel("Command input").fill(command3);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[2]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(
+    "<tr><td>Command: " +
+      command3 +
+      "</td></tr><tr><td>Output:</td></tr>" +
+      "<table>" +
+      expectedResponse3 +
+      "<p></p></table>"
+  );
+});
+
+/**
+ * Test calling mode to switch to current mode. (redundant)
+ */
+test("Behavior when switching mode to current mode", async ({ page }) => {
+  await page.goto("http://localhost:8000/");
+  await page.getByLabel("Login").click();
+  await page.getByLabel("Command input").click();
+
+  // (in brief mode already as dflt)
+
+  // try to switch to brief mode again
+  let command = "mode brief";
+  let data = [["Mode set to brief"]];
+  let expectedResponse = data
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  let replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[0]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedResponse);
+
+  // try to switch to brief mode... again
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[1]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedResponse);
+
+  // switch to verbose
+  command = "mode verbose";
+  data = [["Mode set to verbose"]];
+  expectedResponse = data
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[2]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(
+    "<tr><td>Command: " +
+      command +
+      "</td></tr><tr><td>Output:</td></tr>" +
+      "<table>" +
+      expectedResponse +
+      "<p></p></table>"
+  );
+
+  // try to switch to verbose again
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[3]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(
+    "<tr><td>Command: " +
+      command +
+      "</td></tr><tr><td>Output:</td></tr>" +
+      "<table>" +
+      expectedResponse +
+      "<p></p></table>"
+  );
+});
