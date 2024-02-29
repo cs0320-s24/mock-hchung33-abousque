@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../styles/main.css";
+import "../../styles/main.css";
 import { REPLHistory } from "./REPLHistory";
 import { REPLInput } from "./REPLInput";
 

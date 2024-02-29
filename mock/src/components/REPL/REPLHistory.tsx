@@ -1,4 +1,4 @@
-import "../styles/main.css";
+import "../../styles/main.css";
 
 interface REPLHistoryProps {
   history: string[][][][];

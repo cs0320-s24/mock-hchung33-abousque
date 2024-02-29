@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import "../styles/main.css";
-import { ControlledInput } from "./ControlledInput";
-import { csvActions } from "../mockedBackend/csvActions";
+import "../../styles/main.css";
+import { ControlledInput } from "../ControlledInput";
+import { csvActions } from "../../mockedBackend/csvActions";
 
 /**
  * This is the REPLInputProps, which contains history and brief, and respective
@@ -58,12 +58,10 @@ export function REPLInput(props: REPLInputProps) {
         props.setBrief(false);
         output = [["Mode set to verbose"]];
       } else {
-        output = [["Wrong argument provided to mode: mode <brief OR verbose>"]];
+        output = [["Wrong argument provided to mode: mode brief OR verbose"]];
       }
     } else {
-      output = [
-        ["Wrong number of arguments provided: mode <brief OR verbose>"],
-      ];
+      output = [["Wrong number of arguments provided: mode brief OR verbose"]];
     }
     return output;
   };
@@ -79,7 +77,7 @@ export function REPLInput(props: REPLInputProps) {
     if (args.length === 1) {
       return mockedLoadCsv(args[0]);
     } else {
-      return [["Load formatting incorrect: load_file <csv-file-path>"]];
+      return [["Load formatting incorrect: load_file csv-file-path"]];
     }
   };
 
@@ -109,7 +107,7 @@ export function REPLInput(props: REPLInputProps) {
     if (args.length === 2 || args.length === 3) {
       return mockedSearchCsv(args[0], args[1]);
     } else {
-      return [["Search formatting incorrect: search <value> <column>"]];
+      return [["Search formatting incorrect: search value column"]];
     }
   };
 
