@@ -1,11 +1,17 @@
 import { expect, test } from "@playwright/test";
 
 /**
+ * Before each test, navigate to the localhost endpoint
+ * (Step 1 of playwright test workflow).
+ */
+test.beforeEach(async ({ page }) => {
+  await page.goto("http://localhost:8000/");
+});
+
+/**
  * Test visible login button.
  */
 test("on page load, i see a login button", async ({ page }) => {
-  // Notice: http, not https! Our front-end is not set up for HTTPs.
-  await page.goto("http://localhost:8000/");
   await expect(page.getByLabel("Login")).toBeVisible();
 });
 
@@ -15,7 +21,6 @@ test("on page load, i see a login button", async ({ page }) => {
  * This is USER STORY 5.
  */
 test("on page load, i dont see the input box until login", async ({ page }) => {
-  await page.goto("http://localhost:8000/");
   await expect(page.getByLabel("Sign Out")).not.toBeVisible();
   await expect(page.getByLabel("Command input")).not.toBeVisible();
 
@@ -30,7 +35,6 @@ test("on page load, i dont see the input box until login", async ({ page }) => {
  */
 test("after I type into the input box, its text changes", async ({ page }) => {
   // Step 1: Navigate to a URL
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
 
   // Step 2: Interact with the page
@@ -48,7 +52,6 @@ test("after I type into the input box, its text changes", async ({ page }) => {
  * Test submit button appears on Login.
  */
 test("on page load, i see a button", async ({ page }) => {
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await expect(page.getByRole("button", { name: "Submit" })).toBeVisible();
 });
@@ -57,7 +60,6 @@ test("on page load, i see a button", async ({ page }) => {
  * Test that button reacts with input box as intended.
  */
 test("after I click the button, my command gets pushed", async ({ page }) => {
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("Awesome command");
@@ -77,7 +79,6 @@ test("after I click the button, my command gets pushed", async ({ page }) => {
 test("after I log out then log in, I can't see old output", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await page.getByLabel("Command input").click();
   await page.getByLabel("Command input").fill("test");
@@ -101,7 +102,6 @@ test("after I log out then log in, I can't see old output", async ({
  * Test that you can't type input once logged out.
  */
 test("after I log out, I can't enter any more text", async ({ page }) => {
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await page.getByLabel("Sign Out").click();
 
@@ -114,7 +114,6 @@ test("after I log out, I can't enter any more text", async ({ page }) => {
 test("I can switch from brief to verbose and back with correct outputs", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await page.getByLabel("Command input").click();
 
@@ -158,7 +157,6 @@ test("I can switch from brief to verbose and back with correct outputs", async (
 test("after entering no command, I get no output, in brief", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await page.getByLabel("Command input").click();
 
@@ -187,7 +185,6 @@ test("after entering no command, I get no output, in brief", async ({
 test("after entering no command, I get no output, in verbose", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await page.getByLabel("Command input").click();
 
@@ -220,7 +217,6 @@ test("after entering no command, I get no output, in verbose", async ({
 test("after entering an unrecognized command, I get an error message, in brief", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await page.getByLabel("Command input").click();
 
@@ -239,7 +235,6 @@ test("after entering an unrecognized command, I get an error message, in brief",
 test("after entering an unrecognized command, I get an error message, in verbose", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await page.getByLabel("Command input").click();
 
@@ -274,7 +269,6 @@ test("after entering an unrecognized command, I get an error message, in verbose
 test("after entering a valid load, I get correct output in brief", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await page.getByLabel("Command input").click();
 
@@ -293,7 +287,6 @@ test("after entering a valid load, I get correct output in brief", async ({
 test("after entering a valid load, I get correct output in verbose", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await page.getByLabel("Command input").click();
 
@@ -326,7 +319,6 @@ test("after entering a valid load, I get correct output in verbose", async ({
 test("after I log out then log in, data is no longer loaded from last session", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await page.getByLabel("Command input").click();
 
@@ -362,7 +354,6 @@ test("after I log out then log in, data is no longer loaded from last session", 
 test("after loading a valid numerical csv, I can view & search it, in brief", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await page.getByLabel("Command input").click();
 
@@ -422,7 +413,6 @@ test("after loading a valid numerical csv, I can view & search it, in brief", as
 test("after loading a valid numerical csv, I can view & search it, in verbose", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await page.getByLabel("Command input").click();
 
@@ -500,7 +490,6 @@ test("after loading a valid numerical csv, I can view & search it, in verbose", 
 test("after loading a valid string csv, I can view & search it, in brief", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await page.getByLabel("Command input").click();
 
@@ -565,7 +554,6 @@ test("after loading a valid string csv, I can view & search it, in brief", async
 test("after loading a valid string csv, I can view & search it, in verbose", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await page.getByLabel("Command input").click();
 
@@ -674,7 +662,6 @@ test("after loading a valid string csv, I can view & search it, in verbose", asy
 test("after loading a single col csv, I can view & search it, in brief and verbose", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await page.getByLabel("Command input").click();
 
@@ -786,7 +773,6 @@ test("after loading a single col csv, I can view & search it, in brief and verbo
 test("after loading a single row csv, I can view & search it, in brief and verbose", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await page.getByLabel("Command input").click();
 
@@ -897,7 +883,6 @@ test("after loading a single row csv, I can view & search it, in brief and verbo
 test("after attempting to load a nonexistent file, I can load a real one, in brief", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await page.getByLabel("Command input").click();
 
@@ -967,7 +952,6 @@ test("after attempting to load a nonexistent file, I can load a real one, in bri
 test("after attempting to load a nonexistent file, I can load a real one, in verbose", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await page.getByLabel("Command input").click();
 
@@ -1064,7 +1048,6 @@ test("after attempting to load a nonexistent file, I can load a real one, in ver
 test("I can load, view, search different files in one session", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await page.getByLabel("Command input").click();
 
@@ -1236,7 +1219,6 @@ test("I can load, view, search different files in one session", async ({
 test("I can search switching results between brief and verbose", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await page.getByLabel("Command input").click();
 
@@ -1345,7 +1327,6 @@ test("Behavior when viewed with wrong number of arguments, viewed without loadin
   page,
 }) => {
   // Wrong argument number for View
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await page.getByLabel("Command input").click();
   const command = "view Hi Everyone";
@@ -1436,7 +1417,6 @@ test("Behavior when viewed with wrong number of arguments, viewed without loadin
 test("Behavior when searched with wrong number of arguments, searched without loading, load successful file, and then search properly", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await page.getByLabel("Command input").click();
 
@@ -1539,7 +1519,6 @@ test("Behavior when switching mode with wrong number of arguments, wrong argumen
   page,
 }) => {
   // Wrong argument number for mode
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await page.getByLabel("Command input").click();
   const command = "mode";
@@ -1612,7 +1591,6 @@ test("Behavior when switching mode with wrong number of arguments, wrong argumen
  * Test calling mode to switch to current mode. (redundant)
  */
 test("Behavior when switching mode to current mode", async ({ page }) => {
-  await page.goto("http://localhost:8000/");
   await page.getByLabel("Login").click();
   await page.getByLabel("Command input").click();
 
@@ -1687,4 +1665,32 @@ test("Behavior when switching mode to current mode", async ({ page }) => {
       expectedResponse +
       "<p></p></table>"
   );
+});
+
+/**
+ * Test that malformed CSV cannot be loaded. (BRIEF)
+ */
+test("after trying to load malformed CSV, we get an error message", async ({
+  page,
+}) => {
+  await page.getByLabel("Login").click();
+  await page.getByLabel("Command input").click();
+
+  let command = "load_file malformed.csv";
+  let data = [["Malformed CSV. Unable to handle this file."]];
+  let expectedResponse = data
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  let replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[0]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedResponse);
 });
