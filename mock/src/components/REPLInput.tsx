@@ -127,8 +127,8 @@ export function REPLInput(props: REPLInputProps) {
    * @param commandString the user inputted string detailing their command
    */
   function handleSubmit(commandString: string) {
-    if (commandString === "") {
-      // do nothing if user entered nothing
+    if (commandString.trim() === "") {
+      // do nothing if user entered only whitespace
       return;
     }
     const args = commandString.split(" ");
