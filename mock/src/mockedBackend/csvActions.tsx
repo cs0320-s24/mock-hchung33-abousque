@@ -12,6 +12,7 @@ const oneColSearchResult = mockedJson.oneColSearchResult;
 const oneRowSearchResult = mockedJson.oneRowSearchResult;
 const exampleIncomeCsv = mockedJson.exampleIncomeCsv;
 const exampleIncomeSearchResult = mockedJson.exampleIncomeSearchResult;
+const malformedCsv = mockedJson.malformed;
 
 /**
  * Contains functions for mocked versions of loadCsv, viewCsv, and searchCsv backend.
@@ -37,6 +38,7 @@ export function csvActions(): CSVActionsCollection {
     ["one_row.csv", oneRow],
     ["one_col.csv", oneCol],
     ["income.csv", exampleIncomeCsv],
+    ["malformed.csv", malformedCsv],
   ]);
 
   const fileToSearchResult = new Map<string, string[][] | number[][]>([
@@ -56,6 +58,8 @@ export function csvActions(): CSVActionsCollection {
   function mockedLoadCsv(filepath: string): string[][] {
     if (!filepathToData.has(filepath)) {
       return [["Invalid filepath"]];
+    } else if (filepath === "malformed.csv") {
+      return [["Malformed CSV. Unable to handle this file."]];
     }
     setCurrentCSVPath(filepath);
     setCurrentCSV(filepathToData.get(filepath));

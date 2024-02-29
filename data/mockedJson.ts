@@ -68,6 +68,8 @@ const exampleIncomeSearchResult = [
   ["RI", "Multiracial", "$971.89", "8883.049171", "$0.92", "2%"],
 ];
 
+const malformed = [[1, 2, 1], [5]];
+
 export default {
   emptyResult,
   oneRow,
@@ -80,4 +82,5 @@ export default {
   exampleSearchResultNumbers,
   exampleIncomeCsv,
   exampleIncomeSearchResult,
+  malformed,
 };
