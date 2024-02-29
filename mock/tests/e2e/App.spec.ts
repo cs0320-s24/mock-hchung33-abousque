@@ -360,11 +360,13 @@ test("after I log out then log in, data is no longer loaded from last session", 
   await page.getByLabel("Login").click();
 
   // check that we no longer can access restricted data from previous session
+  await page.getByLabel("Command input").fill("view");
+  await page.getByRole("button", { name: "Submit" }).click();
   replHistory = await page.evaluate(() => {
     const history = document.querySelector(".repl-history");
     return history?.children[0]?.textContent;
   });
-  expect(replHistory).toEqual(undefined);
+  expect(replHistory).toEqual("Attempted to view CSV before loading CSV");
 });
 
 /**
@@ -903,6 +905,151 @@ test("after loading a single row csv, I can view & search it, in brief and verbo
   );
 });
 
+/**
+ * Test load bad file then good file. (BRIEF)
+ */
+test("after attempting to load a nonexistent file, I can load a real one, in brief", async ({
+  page,
+}) => {
+  await page.goto("http://localhost:8000/");
+  await page.getByLabel("Login").click();
+  await page.getByLabel("Command input").click();
+
+  let command = "load_file fake_filepath.csv";
+  let data = [["Invalid filepath"]];
+  let expectedResponse = data
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  let replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[0]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedResponse);
+
+  command = "load_file numbers.csv";
+  data = [["Successfully loaded CSV at numbers.csv"]];
+  expectedResponse = data
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[1]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedResponse);
+});
+
+/**
+ * Test load bad file then good file. (VERBOSE)
+ */
+test("after attempting to load a nonexistent file, I can load a real one, in verbose", async ({
+  page,
+}) => {
+  await page.goto("http://localhost:8000/");
+  await page.getByLabel("Login").click();
+  await page.getByLabel("Command input").click();
+
+  // set verbose mode
+  await page.getByLabel("Command input").fill("mode verbose");
+  await page.getByRole("button", { name: "Submit" }).click();
+
+  // load nonexistent file
+  let command = "load_file fake_filepath.csv";
+  let data = [["Invalid filepath"]];
+  let expectedResponse = data
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  let replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[1]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(
+    "<tr><td>Command: " +
+      command +
+      "</td></tr><tr><td>Output:</td></tr>" +
+      "<table>" +
+      expectedResponse +
+      "<p></p></table>"
+  );
+
+  // attempt to load with wrong number args
+  command = "load_file";
+  data = [["Load formatting incorrect: load_file <csv-file-path>"]];
+  expectedResponse = data
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[2]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(
+    "<tr><td>Command: " +
+      command +
+      "</td></tr><tr><td>Output:</td></tr>" +
+      "<table>" +
+      expectedResponse +
+      "<p></p></table>"
+  );
+
+  // load existing file
+  command = "load_file numbers.csv";
+  data = [["Successfully loaded CSV at numbers.csv"]];
+  expectedResponse = data
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[3]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(
+    "<tr><td>Command: " +
+      command +
+      "</td></tr><tr><td>Output:</td></tr>" +
+      "<table>" +
+      expectedResponse +
+      "<p></p></table>"
+  );
+});
+
 // /**
 //  * Test (BRIEF)
 //  */
@@ -986,13 +1133,14 @@ test("after loading a single row csv, I can view & search it, in brief and verbo
 //  * - search correct many rows/cols
 //  * - search with column in number, column in string
  * - mode with wrong number args
- * - load with wrong number args
+//  * - load with wrong number args
  * - view with wrong number args
  * - search with wrong number args
  * - view before load
  * - search before load
  * - load with data not available
- * - wrong load then correct load
+//  * - wrong load then correct load
+//  * - load nonexistent file
  * - wrong view then correct view
  * - wrong search then correct search
  * - load then view then load then view
