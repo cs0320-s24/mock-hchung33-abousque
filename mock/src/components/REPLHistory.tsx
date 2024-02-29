@@ -30,7 +30,8 @@ export function REPLHistory(props: REPLHistoryProps) {
             ))}
           </tr>
         ))}
-        <p> </p> {/* newline for readability */}
+        <p></p>
+        {/* newline for readability */}
       </table>
     );
   }
