@@ -89,7 +89,7 @@ export function csvActions(): CSVActionsCollection {
    * @returns a string[][] the output of executing the search command
    */
   function mockedSearchCsv(column: string | number, value: string): string[][] {
-    if (currentCSVPath === undefined) {
+    if (currentCSVPath === undefined || currentCSV === undefined) {
       return [["Atempted to search CSV before loading CSV"]];
     } else {
       const result = fileToSearchResult.get(currentCSVPath);

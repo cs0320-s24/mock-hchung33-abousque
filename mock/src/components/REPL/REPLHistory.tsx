@@ -8,7 +8,7 @@ interface REPLHistoryProps {
 /**
  * Main function for exporting REPL History to user display.
  *
- * @param props - REPLHistoryProps including the array of historical commands
+ * @param props - REPLHistoryProps including the array of past commands
  * and the state of the display as in brief mode vs. verbose Mode
  * @returns the HTML to display to the user display
  */
