@@ -1,31 +1,18 @@
 import { expect, test } from "vitest";
 
-import * as REPLInput from "../../src/components/REPLInput";
+import * as REPLInput from "../../src/components/REPL/REPLInput";
 
 test("is 1 + 1 = 2?", () => {
   expect(1 + 1).toBe(2);
 });
 
-// // Notice how you can test vanilla TS functions using Playwright as well!
-// test('main.zero() should return 0', () => {
-//   expect(main.zero()).toBe(0)
-// })
-
 /**
- * Test that calling mode with the wrong number of arguments returns error msg.
- */
-// test('mode with wrong number args', () => {
-//     expect(REPLInput.setMode)
-// })
-
-test("load with wrong number args", () => {});
-
-test("view with wrong number args", () => {});
-
-test("search with wrong number args", () => {});
-
-/**
- * UNIT
+ * UNIT TESTS WE COVERED IN E2E OUT OF NECESSITY:
+ * Please see tests/e2e/App.spec.ts to see these tests in context.
+ * These would mainly test the edge cases caught by our REPLFunctions in REPLInput.
+ * Please see our ed post #351 for more explanation on why we could not run
+ * isolated unit tests.
+ *
  * - mode with wrong number args
  * - load with wrong number args
  * - view with wrong number args
@@ -33,8 +20,10 @@ test("search with wrong number args", () => {});
  * - view before load
  * - search before load
  * - load with data not available
- * - mode success!
- * - setMode, checking brief value before and after? both ways
+ * - mode success
+ * - load success
+ * - view success
+ * - search success
  */
 
 // For more information on how to make unit tests, visit:
