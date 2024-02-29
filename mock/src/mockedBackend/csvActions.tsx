@@ -3,12 +3,13 @@ import mockedJson from "../../../data/mockedJson.js";
 
 // MOCKED DATA
 const exampleCsvStrings = mockedJson.exampleCsvStrings;
-const emptyResult = mockedJson.emptyResult;
 const oneRow = mockedJson.oneRow;
 const oneCol = mockedJson.oneCol;
 const exampleSearchResultStrings = mockedJson.exampleSearchResultStrings;
 const exampleCsvNumbers = mockedJson.exampleCsvNumbers;
 const exampleSearchResultNumbers = mockedJson.exampleSearchResultNumbers;
+const oneColSearchResult = mockedJson.oneColSearchResult;
+const oneRowSearchResult = mockedJson.oneRowSearchResult;
 
 /**
  * Contains functions for mocked versions of loadCsv, viewCsv, and searchCsv backend.
@@ -33,12 +34,13 @@ export function csvActions(): CSVActionsCollection {
     ["numbers.csv", exampleCsvNumbers],
     ["one_row.csv", oneRow],
     ["one_col.csv", oneCol],
-    //   ["empty.csv", emptyResult],
   ]);
 
   const fileToSearchResult = new Map<string, string[][] | number[][]>([
     ["names_and_ages.csv", exampleSearchResultStrings],
     ["numbers.csv", exampleSearchResultNumbers],
+    ["one_row.csv", oneRowSearchResult],
+    ["one_col.csv", oneColSearchResult],
   ]);
 
   /**

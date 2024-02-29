@@ -1,11 +1,15 @@
-const emptyResult: string[] = [];
+const emptyResult: string[][] = [[]];
 
 const oneRow = [["a", "csv", "with", "one", "row!"]];
 
+const oneRowSearchResult = emptyResult;
+
 const oneCol = [["this"], ["csv"], ["has"], ["only"], ["one"], ["column"]];
 
+const oneColSearchResult = [["this"]];
+
 export const exampleCsvStrings = [
-  ["first name", "last name", "age"],
+  ["first_name", "last_name", "age"],
   ["Harry", "Potter", "56"],
   ["Danny", "Fish", "23"],
   ["Harry", "Harry", "12"],
@@ -25,10 +29,12 @@ const exampleCsvNumbers = [
 const exampleSearchResultNumbers = [[0, 1, 0, 1, 0]];
 
 export default {
-  exampleCsvStrings,
   emptyResult,
   oneRow,
+  oneRowSearchResult,
   oneCol,
+  oneColSearchResult,
+  exampleCsvStrings,
   exampleSearchResultStrings,
   exampleCsvNumbers,
   exampleSearchResultNumbers,
