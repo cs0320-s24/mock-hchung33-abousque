@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import "../../styles/main.css";
 import { ControlledInput } from "../ControlledInput";
-import { csvActions } from "../../mockedBackend/csvActions";
+import { csvActions } from "../../mockedBackend/CsvActions";
 
 /**
  * This is the REPLInputProps, which contains history and brief, and respective

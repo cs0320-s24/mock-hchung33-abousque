@@ -22,14 +22,11 @@ In REPLInput, we use the interface REPLInputProps to keep track of our shared hi
 
 setMode checks if the inputted args is of valid length (because we only process the args following "mode", the length should be 1), check if the value is "brief" or "verbose", and adjust the brief value appropriately with props.setBrief and return the 2D Array of string indicating output.
 
-<!--
-wondering if this is unnecessary detail for our "high level design of this program" in this section of the README?
-
 loadCSV checks if the user has appropriately inputted a csv file path after "load_file" command, and either return the output by calling mockedLoadCsv or an error message about the wrong formatting. Read below for further information on mockedLoadCsv, mockedViewCsv, and mockedSearchCsv.
 
 viewCSV also checks if the formatting of the command is valid, and return the result from mockedViewCsv or an appropriate error message.
 
-searchCSV also checks if the formatting of the command is valid, and return the result from mockedSearchCsv or an appropriate error message. -->
+searchCSV also checks if the formatting of the command is valid, and return the result from mockedSearchCsv or an appropriate error message.
 
 Our CSV-related REPLFunctions use currently mocked functionality based on mocked functions mockedLoadCsv, mockedViewCsv, and mockedSearchCsv, that live in src/mockedBackend/csvActions.tsx.CsvActions serves as a mocked backend of this program until we integrate with the backend Java code. It keeps track of mocked data from data/mockedJson.ts, Maps fake filepaths to this mocked data and to example search results, and leverages useState from React to keep track of current 'loaded' CSV and its associated fake filepath.
 
@@ -45,7 +42,7 @@ mockedJson file contains all of the mocked data 2D arrays.
 
 Here are some of the specific design choices we made throughout the project regarding data structures and displaying data:
 
-1. We adjusted the position of text to be shifted left rather than centered on the display (modified App.css) to ensure readable and easily interpretable HTML tables in the repl-history display.
+1. We made the boxes of the HTML tables highlighted with a border for readbility in main.css.
 2. We added newlines between command outputs in the terminal for readability and clear distinctions between the results of one command and the next.
 3. The order of our repl-history output for a single command in verbose is "Command: <command>", newline, "Output:", newline, and then actual <output>. This deviated from the user story 1 description in output display, but we justify the change because it made our code the smoothest for displaying data results and error messages the same way while not affecting user interpretability because the newline between command outputs makes it so a user should still be able to easily see what output corresponds to a given output label.
 4. We changed REPLFunction to return a definitive string[][] rather than a string | string[][] because it made our code for displaying to history a lot cleaner and more flexible since it didn't need to make any distinction between displaying messages or data. Although this means an extra step in returning error messages from REPLFunctions, we feel it is not unreasonably difficult to wrap a string message in a string[][] and our javadoc for REPLFunction specifies and elaborates this change so that user story 6 is still clearly met.
