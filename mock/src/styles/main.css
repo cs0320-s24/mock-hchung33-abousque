@@ -29,3 +29,6 @@ button{
     margin: auto;
     display: block;
 }
+table td {
+    border: 1px solid white;
+}

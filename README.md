@@ -33,16 +33,13 @@ searchCSV also checks if the formatting of the command is valid, and return the 
 
 Our CSV-related REPLFunctions use currently mocked functionality based on mocked functions mockedLoadCsv, mockedViewCsv, and mockedSearchCsv, that live in src/mockedBackend/csvActions.tsx.CsvActions serves as a mocked backend of this program until we integrate with the backend Java code. It keeps track of mocked data from data/mockedJson.ts, Maps fake filepaths to this mocked data and to example search results, and leverages useState from React to keep track of current 'loaded' CSV and its associated fake filepath.
 
-<!--
-Wondering if this is also unnecessary detail?
-
 mockedLoadCsv checks if the filepath is within the Map of mocked responses, and if it is, then it sets current CSV path and current CSV to the new filepath, and returns a success message. If the filepath is not mocked, it returns an error message "Invalid filepath." To also mock the behavior of a malformed CSV, we return an error message that the file is malformed if it is "malformed.csv".
 
 mockedViewCsv checks if currentCSVPath and currentCSV is undefined, and if so, it returns an error message. Otherwise, it creates a table of the currentCSV and returns as output.
 
 mockedSearchCSV checks if currentCSVPath and currentCSV is undefined, and if so, it returns an error message. Otherwise, it retrieves the mocked search result from the Map, and if there is any unforseen error (result being undefined), it returns an error message. Otherwise, it creates a table of the result and returns as output.
 
-mockedJson file contains all of the mocked data 2D arrays. -->
+mockedJson file contains all of the mocked data 2D arrays.
 
 ## Specific Data-Related Design Choices made
 
@@ -129,4 +126,4 @@ If you encounter errors, ensure that you are using the correct npm version (Node
 
 # Collaboration
 
-We conceptually discussed ways to share the brief vs. verbose state between REPLInput and REPLHistory with @...?
+We conceptually discussed ways to share the brief vs. verbose state between REPLInput and REPLHistory with @mshaffe3
