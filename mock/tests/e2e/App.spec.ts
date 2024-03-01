@@ -1694,3 +1694,103 @@ test("after trying to load malformed CSV, we get an error message", async ({
   });
   expect(replHistory).toContain(expectedResponse);
 });
+
+/**
+ * Test that a incorrect load does not overwrite previously loaded CSV. (BRIEF)
+ */
+test("failed load does not overwrite previously (successfully) loaded CSV", async ({
+  page,
+}) => {
+  await page.getByLabel("Login").click();
+  await page.getByLabel("Command input").click();
+
+  // load file
+  let command = "load_file numbers.csv";
+  let expectedResponse = [["Successfully loaded CSV at numbers.csv"]]
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  let replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[0]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedResponse);
+
+  // view file (to check properly loaded)
+  await page.getByLabel("Command input").click();
+  command = "view";
+  const numberData = [
+    [1, 2, 3, 4, 5],
+    [5, 4, 3, 2, 1],
+    [0, 1, 0, 1, 0],
+  ];
+  const expectedViewResponse = numberData
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[1]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedViewResponse);
+
+  // try to load invalid file
+  await page.getByLabel("Command input").click();
+  command = "load_file malformed.csv";
+  expectedResponse = [["Malformed CSV. Unable to handle this file."]]
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[2]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedResponse);
+
+  await page.getByLabel("Command input").click();
+  command = "load_file nonexistent.csv";
+  expectedResponse = [["Invalid filepath"]]
+    .map(
+      (row, index) =>
+        "<tr>" +
+        row.map((cell, index) => "<td>" + cell + "</td>").join("") +
+        "</tr>"
+    )
+    .join("");
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[3]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedResponse);
+
+  // view file (last properly loaded file)
+  await page.getByLabel("Command input").click();
+  command = "view";
+  await page.getByLabel("Command input").fill(command);
+  await page.getByRole("button", { name: "Submit" }).click();
+  replHistory = await page.evaluate(() => {
+    const history = document.querySelector(".repl-history");
+    return history?.children[4]?.innerHTML; // Extracting HTML table content
+  });
+  expect(replHistory).toContain(expectedViewResponse);
+});
