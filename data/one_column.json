@@ -1,5 +1,0 @@
-{
-  "result": "success",
-  "endpoint": "viewcsv",
-  "data": [["this"], ["csv"], ["has"], ["only"], ["one"], ["column"]]
-}
