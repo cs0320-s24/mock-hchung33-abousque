@@ -121,6 +121,10 @@ In a terminal run:
 
 If you encounter errors, ensure that you are using the correct npm version (Node.js version 20.11.1).
 
+## For Back End Developer
+
+Register a new command by creating a new function handler that implements REPLFunction in REPLInput then add that command and its handler function to the commandFunctions map in REPLInput. The remainder will be handled for you! Please see the javadoc for REPLFunction for more specific requirements for your handler function.
+
 # Collaboration
 
 We conceptually discussed ways to share the brief vs. verbose state between REPLInput and REPLHistory with @mshaffe3
